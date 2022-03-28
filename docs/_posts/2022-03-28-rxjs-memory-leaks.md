@@ -5,6 +5,7 @@ date:   2022-03-28 15:10:13 +0100
 categories: typescript
 author: Fabian Birke
 ---
+
 ## Why calling takeUntil() with only subject.next() leads to a new memory leak and how to fix it
 
 RxJS is a JavaScript library for reactive programming, which makes it possible to map a complex asynchronous component flow in a comprehensible way. For this purpose, various states are kept within the application in the form of hot observables, which can be consumed at any time.
