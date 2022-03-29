@@ -16,9 +16,9 @@ Thus, a component for displaying data consumes the hot observables of a service 
 
 ```typescript
 @Component({  
-selector: 'app-root',  
-template: '<button (click)="cancelObservable()">Cancel Observable</button>',  
-styleUrls: ['./app.component.scss']  
+  selector: 'app-root',  
+  template: '<button (click)="cancelObservable()">Cancel Observable</button>',  
+  styleUrls: ['./app.component.scss']  
 })
 export  class  AppComponent  implements  OnInit, OnDestroy {
 
@@ -69,9 +69,9 @@ To better demonstrate the problem, we implement a custom subject that prints a m
 
 ```typescript
 @Component({  
-selector: 'app-root',  
-template: '<button (click)="cancelObservable()">Cancel Observable</button>',  
-styleUrls: ['./app.component.scss']  
+  selector: 'app-root',  
+  template: '<button (click)="cancelObservable()">Cancel Observable</button>',  
+  styleUrls: ['./app.component.scss']  
 })  
 export class AppComponent {  
 
