@@ -15,30 +15,32 @@ RxJS is a JavaScript library for reactive programming, which makes it possible t
 Thus, a component for displaying data consumes the hot observables of a service and extends them with it's own logic. To properly terminate the component's observables, `takeUntil()` is called, which is triggered when the component is destroyed.
 
 ```typescript
-    @Component({  
-      selector: 'app-root',  
-      template: '<button (click)="cancelObservable()">Cancel Observable</button>',  
-      styleUrls: ['./app.component.scss']  
-    })
-    export  class  AppComponent  implements  OnInit, OnDestroy {
-    
-    public onDestroy$ = new BehaviorSubject<void>();  
-      
-    public result = new BehaviorSubject('1');  
-      
-    public result$ = this.result.pipe(  
-      takeUntil(this.onDestroy$)  
-    );  
-      
-    public cancelObservable() {  
-      this.onDestroy$.next();  
-    }  
-      
-    public ngOnInit(): void {  
-      this.result$.subscribe({  
+@Component({  
+  selector: 'app-root',  
+  template: '<button (click)="cancelObservable()">Cancel Observable</button>',  
+  styleUrls: ['./app.component.scss']  
+})
+export  class  AppComponent  implements  OnInit, OnDestroy {
+
+  public onDestroy$ = new BehaviorSubject<void>();  
+
+  public result = new BehaviorSubject('1');  
+
+  public result$ = this.result.pipe(  
+    takeUntil(this.onDestroy$)  
+  );  
+
+  public cancelObservable() {  
+    this.onDestroy$.next();  
+  }  
+
+  public ngOnInit(): void {  
+    this.result$.subscribe({  
       next: () => console.log('result$ next()'),  
       complete: () => console.log('result$ complete()'),  
-     });}
+    });
+  }
+}
 ```
 
 To demonstrate the problem, we have a component that tries to terminate its observables when a button is clicked. Normally the observable is called in the `OnDestroy` lifecycle method of the component.
@@ -49,13 +51,13 @@ The code works great and terminates the `result$` observable as soon as the `can
 If you take a closer look at the implementation of `takeUntil()`, you can see that `takeUntil()` must subscribe to the subject that you put into the function. Only by subscribing, the function can know when to terminate the observable. But the subscribe triggers exactly the same problem that we tried to solve by the `takeUntil()`. Namely the avoidance of a memory leak.
 
 ```typescript
-    export function takeUntil<T>(notifier: ObservableInput<any>): MonoTypeOperatorFunction<T> {
-    return operate((source, subscriber) => {
-	    innerFrom(notifier).subscribe(new OperatorSubscriber(subscriber, () => 		
-	    subscriber.complete(), noop));
-	    !subscriber.closed && source.subscribe(subscriber);
-	    });
-    }
+export function takeUntil<T>(notifier: ObservableInput<any>): MonoTypeOperatorFunction<T> {
+  return operate((source, subscriber) => {
+    innerFrom(notifier).subscribe(new OperatorSubscriber(subscriber, () => 		
+    subscriber.complete(), noop));
+    !subscriber.closed && source.subscribe(subscriber);
+  });
+}
 ```
   
 Source: [Github: takeUntil()](https://github.com/ReactiveX/rxjs/blob/master/src/internal/operators/takeUntil.ts)
@@ -66,42 +68,49 @@ Now we have a situation where we have terminated the source observable, but have
 To better demonstrate the problem, we implement a custom subject that prints a message to the console whenever `next()` or `complete()` is called on the subject.
 
 ```typescript
-    @Component({  
-      selector: 'app-root',  
-      template: '<button (click)="cancelObservable()">Cancel Observable</button>',  
-      styleUrls: ['./app.component.scss']  
-    })  
-    export class AppComponent {  
-      
-      public onDestroy$ = new AutoDestroySubject<void>();  
-      
-      public result = new BehaviorSubject('1');  
-      
-      public result$ = this.result.pipe(  
-      takeUntil(this.onDestroy$)  
-     );  
-      public cancelObservable() {  
-      this.onDestroy$.next();  
-      this.onDestroy$.complete();  
-     }  
-      public ngOnInit(): void {  
-      this.result$.subscribe({  
+@Component({  
+  selector: 'app-root',  
+  template: '<button (click)="cancelObservable()">Cancel Observable</button>',  
+  styleUrls: ['./app.component.scss']  
+})  
+export class AppComponent {  
+
+  public onDestroy$ = new AutoDestroySubject<void>();  
+
+  public result = new BehaviorSubject('1');  
+
+  public result$ = this.result.pipe(  
+    takeUntil(this.onDestroy$)  
+  );
+
+  public cancelObservable() {  
+    this.onDestroy$.next();  
+    this.onDestroy$.complete();  
+  }
+
+  public ngOnInit(): void {  
+    this.result$.subscribe({  
       next: () => console.log('result$ next()'),  
       complete: () => console.log('result$ complete()'),  
-     }); }}  
-      
-    export class AutoDestroySubject<T> extends Subject<T> {  
-      constructor() {  
-      super();  
-     }  
-      public override next(value: T) {  
-      console.log('AutoDestroySubject next() called');  
-      super.next(value);  
-     }  
-      public override complete() {  
-      console.log('AutoDestroySubject complete() called');  
-      super.complete();  
-     }}
+    }); 
+  }
+}  
+
+export class AutoDestroySubject<T> extends Subject<T> {  
+  constructor() {  
+    super();  
+  }
+  
+  public override next(value: T) {  
+    console.log('AutoDestroySubject next() called');  
+    super.next(value);  
+  }
+
+  public override complete() {  
+    console.log('AutoDestroySubject complete() called');  
+    super.complete();  
+  }
+}
 ```
 
 Now we have implemented our own subject, which inherits from subject. To keep the functionality of the subject, we call `super()` in the constructor. We also override the functions `next()` and `complete()` and log something into the console to demonstrate what happens. 
@@ -113,10 +122,10 @@ If you click on the button now, you will see in the console that `AutoDestroySub
 The answer to this is simple. Just call `subject.complete()`.
 
 ```typescript
-    public cancelObservable() {  
-      this.onDestroy$.next();  
-      this.onDestroy$.complete();  
-    }  
+public cancelObservable() {  
+  this.onDestroy$.next();  
+  this.onDestroy$.complete();  
+}  
 ```
 
 If we add the `complete()` to the `cancelObservable()` method and click on the button, then the following entries appear in the console: `AutoDestroySubject next() called` and `AutoDestroySubject complete() called` . Which in turn means that we have resolved all MemoryLeaks.
@@ -124,14 +133,16 @@ If we add the `complete()` to the `cancelObservable()` method and click on the b
 ## Extend the AutoDestroySubject to close it directly after the next().
 
 ```typescript
-    export class AutoDestroySubject<T> extends Subject<T> {  
-      constructor() {  
-      super();  
-     }  
-      public override next(value: T) {  
-      super.next(value);  
-      super.complete();  
-     }}
+export class AutoDestroySubject<T> extends Subject<T> {  
+  constructor() {  
+    super();  
+  }
+  
+  public override next(value: T) {  
+    super.next(value);  
+    super.complete();  
+  }
+}
 ```     
  
 By calling `super.complete()` directly in the `next()` method of the subject after the first value is emitted, we ensure that the memory leak of the subject is also resolved as soon as a value is emitted.
