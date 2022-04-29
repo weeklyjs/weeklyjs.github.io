@@ -15,8 +15,8 @@ Nothing is more important for my colleageues and me than a clean flow of operato
 
 ```typescript
 public userName$ = this.loginService.onLogin$.pipe(
-	switchMap((credentials) => this.authService.authenticate(credentials)),
-	tap((user) => !user && this.router.navigate(['/login'])),
+  switchMap((credentials) => this.authService.authenticate(credentials)),
+  tap((user) => !user && this.router.navigate(['/login'])),
   filterNotNull(), // custom
   map(({userName}) => userName),
   share({
@@ -31,8 +31,8 @@ What would that look like in a "bad" case?
 
 ```typescript
 public userName$ = this.loginService.onLogin$.pipe(
-	switchMap((credentials) => this.authService.authenticate(credentials).pipe(
-  	tap((user) => !user && this.router.navigate(['/login'])),
+  switchMap((credentials) => this.authService.authenticate(credentials).pipe(
+    tap((user) => !user && this.router.navigate(['/login'])),
     filterNotNull(), // custom
   )),
   map(({userName}) => userName),
@@ -52,7 +52,7 @@ Have you ever seen something like this?
 
 ```typescript
 ....pipe(
-	filter((dtoOrNull) => !dtoOrNull),
+  filter((dtoOrNull) => !dtoOrNull),
   map((dto) => dto!.prop)
 )
 ...
@@ -95,7 +95,7 @@ export class FilterService {
 @Injectable()
 export class ListService {
   public listItems$ = this.apiService.listData$.pipe(
-  	this.filterService.filterFn<ListItem>((item, term) => item.title.contains(term))
+    this.filterService.filterFn<ListItem>((item, term) => item.title.contains(term))
   );
   
   constructor(private filterService: FilterService) {}
