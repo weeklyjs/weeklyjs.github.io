@@ -50,8 +50,8 @@ npm i
 Our starter project uses 
 
 - the [*commander*](https://www.npmjs.com/package/commander) package for argument parsing and executing commands, 
-- code linting and formatting with [typescript-eslint](https://github.com/typescript-eslint/typescript-eslint) and [prettier](https://prettier.io/), 
-- [Jest](https://jestjs.io/) as test runner as well as testing and assertion library, and 
+- code linting and formatting with [eslint](https://eslint.org/) and [prettier](https://prettier.io/), 
+- [Jest](https://jestjs.io/) as test runner and assertion library, and 
 - [pkg](https://github.com/vercel/pkg) to build a stand-alone binary.
 
 To illustrate the development flow, we now add an example subcommand and test it. 
