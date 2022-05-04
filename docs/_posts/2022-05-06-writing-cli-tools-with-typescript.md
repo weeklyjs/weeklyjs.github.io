@@ -4,14 +4,11 @@ title:  Writing CLI tools with TypeScript
 date:   2022-05-06 08:00:13 +0100
 categories: typescript, cli
 author: Friedrich Kurz
+excerpt: "There are quite a couple of technology options when it comes to writing a *command-line interface* (CLI) tool. TypeScript is a good choice for a couple of reasons including developer-friendliness, static checks, as well as a broad choice of tooling options. As with every TypeScript project, there is however an initial setup hurdle. We'll have a look at how to set up a TypeScript CLI project with linting, formatting, testing, and packaging to a standalone binary in this post."
 ---
-# Writing CLI tools with TypeScript
+There are quite a couple of technology options when it comes to writing a *command-line interface* (CLI) tool. Most modern languages at the very least provide some kind of out-of-the-box support for command-line argument parsing. In addition, the ecosystems of modern languages also typically contain at least one mature and feature-rich CLI library. 
 
-There are quite a couple of technology options when it comes to writing a *command-line interface* (CLI) tool.
 
-Most modern languages at the very least provide some kind of out-of-the-box support for command-line argument parsing. 
-
-In addition, the ecosystems of modern languages also typically contain at least one mature and feature-rich CLI library.
 
 To give a few examples, here are some of the libraries and languages I've used recently to write CLIs
 
@@ -32,9 +29,7 @@ Well, TypeScript is an overall good choice for a couple of reasons:
 
 Nonetheless, a typically non-trivial part of any TypeScript project is the setup. Writing a CLI with e.g. Python and the [Click](https://click.palletsprojects.com/en/8.1.x/) library requires little more than writing a file with the [main function](https://docs.python.org/3/library/__main__.html#packaging-considerations). This higher setup complexity is of course owed to the fact that TypeScript is a superset of JavaScript. To run TypeScript code, you typically transpile it to JavaScript and then execute the JavaScript code with Node.js. (Yes, even [ts-node](https://github.com/TypeStrong/ts-node) does that.) So, before running a program written in TypeScript, we need to transpile it to JavaScript first. This requires tooling and therefore setup.
 
-Preferably, we also want to have a single, packaged binary as the result of building our project, rather than a script file, to reduce installation overhead on part of the user. 
-
-To assure high code quality we also typically want to include code formatting, linting, and tests.
+Preferably, we also want to have a single, packaged binary as the result of building our project, rather than a script file, to reduce installation overhead on part of the user. To assure high code quality we also typically want to include code formatting, linting, and tests.
 
 ## Basic development flow
 
@@ -59,7 +54,7 @@ Our starter project uses
 
 To illustrate the development flow, we now add an example subcommand *yell* and test it. *yell* is similar to the *say* command (that already exists in the project) but a bit less subtle.
 
-To do this, we add a file *src/yell.ts* and then add the following code.
+To do this, we add a file `src/yell.ts` and then add the following code.
 
 ```typescript
 // src/yell.ts
@@ -73,7 +68,7 @@ export default (): Command =>
   .action((word: string) => console.log(word.toLocaleUpperCase()));
 ```
 
-We also have to register our yell command with the main CLI command in src/cmd.ts, i.e. add an import statement for our subcommand and register it using *Commander.addCommand* 
+We also have to register our yell command with the main CLI command in `src/cmd.ts`, i.e. add an import statement for our subcommand and register it using *Commander.addCommand* 
 
 ```typescript
 // src/cmd.ts
@@ -94,7 +89,7 @@ export default (): Command => {
 };
 ```
 
-Having done that, we can run a quick test on our command using the *dev* script defined in package.json. The dev script simply executes our TypeScript code with [ts-node](https://github.com/TypeStrong/ts-node).
+Having done that, we can run a quick test on our command using the `dev` script defined in `package.json`. The `dev` script simply executes our TypeScript code with [ts-node](https://github.com/TypeStrong/ts-node).
 
 ```bash
 $ npm run dev -- yell 'hey!'
@@ -105,7 +100,7 @@ $ npm run dev -- yell 'hey!'
 HEY!
 ```
 
-We can also add a test by adding *src/yell.test.ts* with the following content
+We can also add a test by adding `src/yell.test.ts` with the following content
 
 ```typescript
 import buildCmd from "./cmd";
@@ -125,7 +120,7 @@ describe("Yell subcommand", () => {
 });
 ```
 
-Since our Jest configuration expects JavaScript test files, we first have to transpile our code with the build script using the TypeScript compiler *tsc*. The transpiled JavaScript source code is put into the dist/ folder.
+Since our Jest configuration expects JavaScript test files, we first have to transpile our code with the build script using the TypeScript compiler `tsc`. The transpiled JavaScript source code is put into the `dist/` folder.
 
 ```bash
 $ npm run build
@@ -133,7 +128,7 @@ $ npm run build
 > tsc --build
 ```
 
-We can now run our test suite with Jest using the test script. New test files will automatically get recognized by Jest if they have—as in our case—the suffix *.test.js*
+We can now run our test suite with Jest using the test script. New test files will automatically get recognized by Jest if they have—as in our case—the suffix `*.test.js*`.
 
 ```bash
 $ npm run test
@@ -148,7 +143,7 @@ Snapshots:   0 total
 Time:        0.41 s, estimated 1 s
 Ran all test suites.
 ```
-As a final step, we can build a native binary by executing npm run package. The pkg tool will then bundle all source code and dependencies into a single binary file *bin/main*. 
+As a final step, we can build a native binary by executing npm run package. The `pkg` tool will then bundle all source code and dependencies into a single binary file `bin/main`. 
 
 ```bash
 $ npm run package
@@ -159,11 +154,7 @@ $ npm run package
 > pkg@5.3.1
 ```
 
-Before running the program, we have to make it executable 
-
-```bash
-chmod +x ./bin/main
-```
+The packaged binary is automatically made executable using the `postpackage` script.
 Now we can simply run the binary from the shell without a Node.js installation without any dependency installations whatsoever.
 
 ```bash
@@ -177,12 +168,11 @@ TypeScript is a good choice for writing a CLI tool due to various factors.
 
 Not only is TypeScript a developer-friendly language but it also has static checks to assure code quality and its ecosystem offers a wide range of tooling choices for command-line programs.
 
-Moreover, as shown above, developing a CLI utility written in TypeScript does not preclude the option of exporting a stand-alone, native binary if we use a tool like _pkg_ to bundle our program and dependencies into an application binary.
+Moreover, as shown above, developing a CLI utility written in TypeScript does not preclude the option of exporting a stand-alone, native binary if we use a tool like `pkg` to bundle our program and dependencies into an application binary.
 
 Do you have any questions, suggestions, or comments? Get in touch with the author [via mail](https://aemail.com/Z4YQ)!
 
 ## About the Author: Friedrich Kurz
 
-Friedrich has been working for MaibornWolff as a full-time software engineer for 2.5 years. In his current project, he's working on AWS cloud infrastructure development for a client's web platform. Friedrich describes himself as a technology generalist with a broad range of interests rather than a technology specialist but he's also very interested in functional programming and general methods of writing correct, clean, and maintainable code.
-
+Friedrich has been working for MaibornWolff as a full-time software engineer for 2.5 years. In his current project, he's working on AWS cloud infrastructure development for a client's web platform. Friedrich considers himself as a technology generalist with a broad range of interests rather than a technology specialist but he's also very interested in functional programming and general methods of writing correct, clean, and maintainable code.
 
