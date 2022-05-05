@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  Writing CLI tools with TypeScript
-date:   2021-05-06 08:00:13 +0100
+date:   2022-05-06 08:00:13 +0100
 categories: typescript, cli
 author: Friedrich Kurz
 excerpt: "There are quite a couple of technology options when it comes to writing a *command-line interface* (CLI) tool. TypeScript is a good choice for a couple of reasons including developer-friendliness, static checks, as well as a broad choice of tooling options. As with every TypeScript project, there is however an initial setup hurdle. We'll have a look at how to set up a TypeScript CLI project with linting, formatting, testing, and packaging to a standalone binary in this post."
