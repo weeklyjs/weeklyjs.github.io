@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  Writing CLI tools with TypeScript
-date:   2022-05-06 08:00:13 +0100
+date:   2021-05-06 08:00:13 +0100
 categories: typescript, cli
 author: Friedrich Kurz
 excerpt: "There are quite a couple of technology options when it comes to writing a *command-line interface* (CLI) tool. TypeScript is a good choice for a couple of reasons including developer-friendliness, static checks, as well as a broad choice of tooling options. As with every TypeScript project, there is however an initial setup hurdle. We'll have a look at how to set up a TypeScript CLI project with linting, formatting, testing, and packaging to a standalone binary in this post."
@@ -29,9 +29,9 @@ Well, TypeScript is an overall good choice for a couple of reasons:
 
 Nonetheless, a typically non-trivial part of any TypeScript project is the setup. Writing a CLI with e.g. Python and the [Click](https://click.palletsprojects.com/en/8.1.x/) library requires little more than writing a file with the [main function](https://docs.python.org/3/library/__main__.html#packaging-considerations). This higher setup complexity is of course owed to the fact that TypeScript is a superset of JavaScript. To run TypeScript code, you typically transpile it to JavaScript and then execute the JavaScript code with Node.js. (Yes, even [ts-node](https://github.com/TypeStrong/ts-node) does that.) So, before running a program written in TypeScript, we need to transpile it to JavaScript first. This requires tooling and therefore setup.
 
-Preferably, we also want to have a single, packaged binary as the result of building our project, rather than a script file, to reduce installation overhead on part of the user. To assure high code quality we also typically want to include code formatting, linting, and tests.
+Preferably, we also want to have a single, packaged binary as the result of building our project, rather than a script file, to reduce installation overhead on part of the user. To assure a high level of code quality, we also typically want to include code formatting, linting, and tests.
 
-## Basic development flow
+## Getting started writing a TypeScript CLI
 
 To hit the ground running, I created a starter project which already contains all required boilerplate and dependencies for running, formatting, linting, testing, and packaging the code to a standalone binary. 
 
@@ -52,7 +52,9 @@ Our starter project uses
 - [Jest](https://jestjs.io/) as test runner and assertion library, and 
 - [pkg](https://github.com/vercel/pkg) to build a stand-alone binary.
 
-To illustrate the development flow, we now add an example subcommand *yell* and test it. *yell* is similar to the *say* command (that already exists in the project) but a bit less subtle.
+## Basic development flow
+
+To illustrate the development flow, we now add an example subcommand `yell` and test it. `yell` is similar to the `say` command (that already exists in the project) but a bit less subtle. 
 
 To do this, we add a file `src/yell.ts` and then add the following code.
 
@@ -89,7 +91,7 @@ export default (): Command => {
 };
 ```
 
-Having done that, we can run a quick test on our command using the `dev` script defined in `package.json`. The `dev` script simply executes our TypeScript code with [ts-node](https://github.com/TypeStrong/ts-node).
+Having done that, we can do a quick test run using the `dev` script defined in `package.json`. The `dev` script simply executes our TypeScript code with [ts-node](https://github.com/TypeStrong/ts-node).
 
 ```bash
 $ npm run dev -- yell 'hey!'
@@ -143,7 +145,7 @@ Snapshots:   0 total
 Time:        0.41 s, estimated 1 s
 Ran all test suites.
 ```
-As a final step, we can build a native binary by executing npm run package. The `pkg` tool will then bundle all source code and dependencies into a single binary file `bin/main`. 
+As a final step, we can build a native binary by executing npm run package. This script will conveniently bundle all source code and dependencies into a single, stand-alone binary file `bin/main` using the `pkg` tool. 
 
 ```bash
 $ npm run package
@@ -155,7 +157,7 @@ $ npm run package
 ```
 
 The packaged binary is automatically made executable using the `postpackage` script.
-Now we can simply run the binary from the shell without a Node.js installation without any dependency installations whatsoever.
+Packaging our CLI into a standalone binary has the major advantage that we can now simply run our CLI as a binary from the shell without a Node.js installation and without having to download any dependency whatsoever.
 
 ```bash
 $ ./bin/main yell 'hey!'
@@ -168,11 +170,10 @@ TypeScript is a good choice for writing a CLI tool due to various factors.
 
 Not only is TypeScript a developer-friendly language but it also has static checks to assure code quality and its ecosystem offers a wide range of tooling choices for command-line programs.
 
-Moreover, as shown above, developing a CLI utility written in TypeScript does not preclude the option of exporting a stand-alone, native binary if we use a tool like `pkg` to bundle our program and dependencies into an application binary.
+Additionally, as shown above, developing a CLI utility written in TypeScript does not preclude the option of exporting a stand-alone, native binary if we use a tool like `pkg` to bundle our program and dependencies into an application binary.
 
 Do you have any questions, suggestions, or comments? Get in touch with the author [via mail](https://aemail.com/Z4YQ)!
 
 ## About the Author: Friedrich Kurz
 
-Friedrich has been working for MaibornWolff as a full-time software engineer for 2.5 years. In his current project, he's working on AWS cloud infrastructure development for a client's web platform. Friedrich considers himself as a technology generalist with a broad range of interests rather than a technology specialist but he's also very interested in functional programming and general methods of writing correct, clean, and maintainable code.
-
+Friedrich has been working for MaibornWolff as a full-time software engineer for 2.5 years. In his current project, he's helping to build the AWS cloud infrastructure for a client's web platform. Friedrich considers himself a technology generalist with a broad range of interests rather than a technology specialist. He's, however, also very interested in functional programming and general methods of writing correct, clean, and maintainable code.
