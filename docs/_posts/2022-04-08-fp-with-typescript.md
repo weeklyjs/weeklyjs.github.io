@@ -62,19 +62,27 @@ Let's look at a small example now:
 ```typescript
 // sort items
 function sortFn(items: Model[]): Model[] {
+  console.log('sort',Date.now());
   return items.sort();
 }
+
 // filter items
-function filterFn(items: Model[], fn: (item: Model) => boolean): Model[] {
-  return items.filter(fn);
+function filterFn(fn: (item: Model) => boolean): (items: Model[]) => Model[] {
+  return (items) => {
+      console.log('filter',Date.now());
+      return items.filter(fn);
+  };
 }
 
+const filter = filterFn((item) => item.name.startsWith('A'));
+
 // items -> sort -> filter
-const filterAndSort = compose(filterFn)(sortFn);
+const filterAndSort = compose(filter)(sortFn);
 
 const items: Model[];
 
 const finalData = filterAndSort(items);
+
 ```
 
 That Functions return functions can also be useful for other use cases, in this example with Cypress:
