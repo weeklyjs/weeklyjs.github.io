@@ -62,16 +62,12 @@ Let's look at a small example now:
 ```typescript
 // sort items
 function sortFn(items: Model[]): Model[] {
-  console.log('sort',Date.now());
   return items.sort();
 }
 
 // filter items
 function filterFn(fn: (item: Model) => boolean): (items: Model[]) => Model[] {
-  return (items) => {
-      console.log('filter',Date.now());
-      return items.filter(fn);
-  };
+  return (items) => items.filter(fn);
 }
 
 const filter = filterFn((item) => item.name.startsWith('A'));
