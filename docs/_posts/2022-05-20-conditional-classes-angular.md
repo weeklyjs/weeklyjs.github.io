@@ -6,7 +6,7 @@ categories: angular
 author: Nils Heinemann
 ---
 
-How do you handle conditional classes at a dom element in Angular? There are two main options: class-bidings and `ngclass`. But which one is better?
+How do you handle conditional classes at a dom element in Angular? There are two main options: class-bindings and `ngclass`. But which one is better?
 I tested both to get a definite answer.
 
 ## ngclass vs class-binding
