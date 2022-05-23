@@ -66,6 +66,7 @@ on http://localhost:4200 you can directly interact with the current selected ver
 
 ## My Result
 
+> fnumbers in seconds
 
 | Direction | ngclass | Class-binding |
 | :-------: | :-----: | :-----------: |
