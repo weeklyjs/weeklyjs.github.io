@@ -46,7 +46,7 @@ index.html => basic resetted index file
 
 ### Do it yourself
 
-just clone the [repository](https://github.com:SourceCodeBot/angular-class-binding-demo) and execute `npm start`.
+just clone the [repository](https://github.com/SourceCodeBot/angular-class-binding-demo) and execute `npm start`.
 
 on http://localhost:4200 you can directly interact with the current selected version.
 
@@ -66,6 +66,7 @@ on http://localhost:4200 you can directly interact with the current selected ver
 
 ## My Result
 
+> numbers in seconds
 
 | Direction | ngclass | Class-binding |
 | :-------: | :-----: | :-----------: |
