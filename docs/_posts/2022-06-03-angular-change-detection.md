@@ -1,9 +1,18 @@
-# AngularChangedetectionPlayground
+---
+layout: post
+title: "Angular Changedetection Playground"
+date: 2022-06-03 06:00:13 +0100
+categories: angular
+author: Nils Heinemann
+---
 
-some colleagues who have not yet dealt much with the topic of ChangeDetection in Angular may find it difficult to imagine what the difference is.
+# Angular Changedetection Playground
 
-Here I would like to compare a few values.
+Some colleagues who have not yet dealt much with the topic of ChangeDetection in Angular may find it difficult to imagine what the difference is.
 
+When your application gets larger this topic gets more relevant tou you.
+
+Here I would like to compare show how ChangeDetection can take effect of performance in an application.
 
 ## What is ChangeDetection?
 
@@ -13,14 +22,13 @@ By Default, each component is permanently checked whether values have changed.
 
 In my main project which grow over the years it is nearly endless processing.
 
-So the idea was, step by step migrate to onPush.
+So the idea was, step by step migrate to `OnPush`.
 
 But why the difference?
 
-With OnPush, with the available board tools and yourself, it's up to you to trigger the detection.
+With `OnPush`, with the available board tools and yourself, it's up to you to trigger the ChangeDection.
 
 In the next sections I hope I serve you a better overview what happend and why it is important to not ignore that topic.
-
 
 ## Before to start
 
@@ -32,18 +40,21 @@ what is the difference between `markForCheck` and `detectChanges`?
 
 ### detectChanges
 
-`detectChanges` should used to check the view and them children.
+`detectChanges` should used to check the view and the children of it.
 
-In combination with `detach` it's able to implement local change detection checks.
-
+If you want to check only a small scope of your detection tree, use `detach`.
 
 > Warning: detach components should be done with caution!
 
 ## Expectation
 
-Default: Angular plays it safe and rather checks once too often than too little if something has changed and renders the DOM of the component again. This is done throughout the DOM tree.
+Default: Im Default Fall wird Angular eher einmal zu oft als zu wenig den DOM Baum prüfen auf Veränderungen.
 
-OnPush: Angular relies on the ChangeDetection base board means to be sufficient, or pipes and components to inform the ChangeDetectionRef if something has changed outside the board means.
+Default: Angular will rather check too many times than not enough.
+
+OnPush: Angular überlässt dir, mit hilfe von bordmitteln, wie z.b. Pipes und COmponents die ChangeDetection, außerhalb der Prüfzyklen erneute Prüfungen selbstständig zu signalisieren.
+
+OnPush: In Angular it's your own responsibility to use builtin capabilities like Pipes, Components and the ChangeDetectorRef to define where checks are necessary outside the lifecycle routines.
 
 ## Setup
 
@@ -51,13 +62,15 @@ Angular ~13
 
 Material ~13
 
+Now I going to use the following two components to build my test angular component tree.
+
 AppComponent - the App Wrapper
 
-DetectionBlockComponent - Components which create Recursive Child-Components.
+DetectionBlockComponent - Components which create recursive Child-Components.
 
 ## Playground
 
-my Component tree looks like:
+My Component tree looks like:
 
 ```markdown
 | App
@@ -73,7 +86,7 @@ my Component tree looks like:
 
 ## Test Process
 
-the following steps I clicked in the appliation:
+The following steps I clicked in the appliation:
 
 1. Open Page
 2. click detectChanges 4
@@ -86,9 +99,9 @@ the following steps I clicked in the appliation:
 
 # Test results
 
-## app default
+## app in default detection
 
-when app is on default(and components on push), we come to the following numbers
+We come to the following numbers
 
 | Step | check cycles |
 |---|---|
@@ -101,22 +114,29 @@ when app is on default(and components on push), we come to the following numbers
 | 7 | 9 |
 | total | 83 |
 
-### explaination
+### Explaination
 
-initial the complete tree will be check from the detector.
+Initial the complete tree will be check from the detector.
 
-after the initial check, the app component in default mode will check multiple times itself and its children.
+After the initial check, the app component in default mode will check multiple times itself and the children of it.
 
-when `detectChanges` a node in the tree, itself and its children will check. also, when it isn't detached, the whole tree until there.
+When click on `detectChanges` of a node in the tree, itself and its children will be checked. If you don't use `detach` the ChangeDetection will start at the top of the tree and check until the origin of the detection event.
 
-and again, default, app will check them children multiple times.
+And again, default, app will check them children multiple times.
 
-`markForCheck` will just check itself and then the tree. so the child of 7 will check while the tree check not direct. that can be important in some cases!
+What happens with `markForCheck`:
 
+1. checks 7
+2. checks app
+3. checks 1
+4. checks 2
+5. checks 7
+6. checks 8
+7. double checks app again
 
-## app onpush
+## app in onpush detection
 
-when app is onPush, we come to the following numbers
+We come to the following numbers
 
 | Step | check cycles |
 |---|---|
@@ -129,26 +149,25 @@ when app is onPush, we come to the following numbers
 | 7 | 5 |
 | total | 55 |
 
-### explaination
+### Explaination
 
-wow! just app component onPush v.s. default made round about 45%!
+Wow! Just app component onPush v.s. default made round about 45%!
 
-in initial check, 1 and 2 won't check twice, only app still check multiple times thich that setup.
+In initial check, '1' and '2' won't check twice, only app still check multiple times in that setup.
 
-also additional steps won't check less times.
+Also additional steps won't check as often.
 
-App is more stable and won't check the tree everytime so aggressive.
+App is more stable and won't check the tree everytime so "aggressive".
 
 What's the pitfall here? Mutations in objects without trigger detection by yourself can occure stale views. So be careful how you write component logic. Best practices IMHO are observables with async subscription in the template or call `markForCheck` after async processes in the component.
 
 ## detach components after view init
 
-> this section is more experimental!
+> This section is more experimental!
 > In this case, the simple application setup made it possible receive the same application behavior then before.
 > Larger apps may get more stale and shaky when detach without caution!
 
-with detach the components after intial rendering the following numbers
-
+When you have call `detach` the components after intial rendering show the following numbers
 
 | Step | check cycles |
 |---|---|
@@ -162,32 +181,38 @@ with detach the components after intial rendering the following numbers
 | total | 38 |
 
 
-### explaination
+### Explaination
 
-awesome, from 83 to 38 is a lot of circles which we safed!
+Awesome, from 83 to 38 is a lot of circles which we safed!
 
-what's the reason?
+What's the reason?
 
-by detaching all components from the change detection, you have to full control the detection of them.
 
-for example, after initial the `detectChanges` of 4 will only effect app, 4 and 5.
+By detaching all components from the ChangeDetection, you take over the full control over the ChangeDetection of them.
 
-5 is the child, 4 itself and app because it's the root node and have to check how much of the total tree (which nomore exists more or less) has to check like before.
+For example, after 'initial' step the `detectChanges` of '4' will only effect app, '4' and '5'.
 
-the multiple times of checking app in the next steps is for me also a secret, I'll check them later.
+'5' is the child, '4' itself and app because it's the root node and have to check how much of the total tree (which nomore exists more or less) has to check like before.
+
+> The reason for multiple checks of app is not clear to me, I'll check it later.
 
 What are the risks with this setup?
 
-1. Detach can hide changes in the detector circles, so changes in your component won't notify the renderer and the DOM will be stale.
+1. Detach can hide changes in the detector circles, so changes in your component won't notify the renderer and the DOM become stale.
 2. You have to do a lot of things manually, like detection and detach(reattach) the component
-3. child components may not render or act correct. In my first experiments MatButtons or MatInputs won't display correct.
+3. Child components may not render or act correctly. In my first experiments with `MatButton` or `MatInput` it won't display correct.
 
-## my learning while writing this post
+## My learning while writing this post
 
-1. detach static "leaf" components can safe performance 
-2. from default to onpush can be hard but is essential for larger applications
+1. `detach` static "leaf" components can safe performance 
+2. From `Default` to `OnPush` can be hard but is essential for larger applications
 
 
-### numbers behind the tests
+### Numbers behind the tests
 
-see [here](../assets/numbers.md)
+See [here](../assets/numbers.md)
+
+
+## About the author: Nils Heinemann
+
+Nils has more than five years of experience in software development and architecture. He specializes in frontend development with Angular and TypeScript. Nils joined MaibornWolff in 2018.
