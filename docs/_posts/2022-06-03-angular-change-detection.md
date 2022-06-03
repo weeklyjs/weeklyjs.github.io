@@ -1,6 +1,6 @@
 # AngularChangedetectionPlayground
 
-some colleagues who have not yet dealt much with the topic of detection in Angular may find it difficult to imagine what the difference is.
+some colleagues who have not yet dealt much with the topic of ChangeDetection in Angular may find it difficult to imagine what the difference is.
 
 Here I would like to compare a few values.
 
