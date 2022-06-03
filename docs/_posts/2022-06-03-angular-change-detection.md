@@ -6,29 +6,28 @@ categories: angular
 author: Nils Heinemann
 ---
 
-# Angular Changedetection Playground
-
-Some colleagues who have not yet dealt much with the topic of ChangeDetection in Angular may find it difficult to imagine what the difference is.
+Some colleagues who have not yet dealt much with the topic of ChangeDetection in Angular may find it difficult to imagine what the 
+difference between the default and the `OnPush` approach is.
 
 When your application gets larger this topic gets more relevant tou you.
 
-Here I would like to compare show how ChangeDetection can take effect of performance in an application.
+Here I would like to compare and show how ChangeDetection can have an effect on the performance of an application.
 
 ## What is ChangeDetection?
 
-ChangeDetection in Angular is a process, which check if components have to rerender.
+ChangeDetection in Angular is a process which check if components have to rerender.
 
 By Default, each component is permanently checked whether values have changed.
 
-In my main project which grow over the years it is nearly endless processing.
+In my main project which grew over the years it is a nearly endless type of processing.
 
 So the idea was, step by step migrate to `OnPush`.
 
-But why the difference?
+But what is the difference?
 
-With `OnPush`, with the available board tools and yourself, it's up to you to trigger the ChangeDection.
+With `OnPush` it's up to you to trigger the ChangeDection yourself, using the available tools.
 
-In the next sections I hope I serve you a better overview what happend and why it is important to not ignore that topic.
+In this articls I hope to give you a better overview of the differences and why it is important to not ignore that topic.
 
 ## Before to start
 
@@ -36,11 +35,11 @@ what is the difference between `markForCheck` and `detectChanges`?
 
 ### markForCheck
 
-`markForCheck` should always used if you have to signal the detector to check that view.
+`markForCheck` should always be used if you have to signal the detector to check that view.
 
 ### detectChanges
 
-`detectChanges` should used to check the view and the children of it.
+`detectChanges` should be used to check the view and the children of it.
 
 If you want to check only a small scope of your detection tree, use `detach`.
 
@@ -48,13 +47,9 @@ If you want to check only a small scope of your detection tree, use `detach`.
 
 ## Expectation
 
-Default: Im Default Fall wird Angular eher einmal zu oft als zu wenig den DOM Baum prüfen auf Veränderungen.
+Default: Angular will rather check the DOM tree too many times than not enough.
 
-Default: Angular will rather check too many times than not enough.
-
-OnPush: Angular überlässt dir, mit hilfe von bordmitteln, wie z.b. Pipes und COmponents die ChangeDetection, außerhalb der Prüfzyklen erneute Prüfungen selbstständig zu signalisieren.
-
-OnPush: In Angular it's your own responsibility to use builtin capabilities like Pipes, Components and the ChangeDetectorRef to define where checks are necessary outside the lifecycle routines.
+OnPush: In Angular it's your own responsibility to use build-in capabilities like Pipes, Components and the ChangeDetectorRef to define where checks are necessary outside the lifecycle routines.
 
 ## Setup
 
@@ -66,7 +61,7 @@ Now I going to use the following two components to build my test angular compone
 
 AppComponent - the App Wrapper
 
-DetectionBlockComponent - Components which create recursive Child-Components.
+DetectionBlockComponent - Components which create recursive Child Components.
 
 ## Playground
 
@@ -116,13 +111,13 @@ We come to the following numbers
 
 ### Explaination
 
-Initial the complete tree will be check from the detector.
+the complete tree will be check from the detector on initial.
 
 After the initial check, the app component in default mode will check multiple times itself and the children of it.
 
 When click on `detectChanges` of a node in the tree, itself and its children will be checked. If you don't use `detach` the ChangeDetection will start at the top of the tree and check until the origin of the detection event.
 
-And again, default, app will check them children multiple times.
+And again, default, app will check their children multiple times.
 
 What happens with `markForCheck`:
 
@@ -151,7 +146,7 @@ We come to the following numbers
 
 ### Explaination
 
-Wow! Just app component onPush v.s. default made round about 45%!
+Wow! Just app component onPush v.s. default performed better by about 45%!
 
 In initial check, '1' and '2' won't check twice, only app still check multiple times in that setup.
 
@@ -164,7 +159,7 @@ What's the pitfall here? Mutations in objects without trigger detection by yours
 ## detach components after view init
 
 > This section is more experimental!
-> In this case, the simple application setup made it possible receive the same application behavior then before.
+> In this case, the simple application setup made it possible to receive the same application behavior then before.
 > Larger apps may get more stale and shaky when detach without caution!
 
 When you have call `detach` the components after intial rendering show the following numbers
@@ -187,7 +182,6 @@ Awesome, from 83 to 38 is a lot of circles which we safed!
 
 What's the reason?
 
-
 By detaching all components from the ChangeDetection, you take over the full control over the ChangeDetection of them.
 
 For example, after 'initial' step the `detectChanges` of '4' will only effect app, '4' and '5'.
@@ -198,7 +192,7 @@ For example, after 'initial' step the `detectChanges` of '4' will only effect ap
 
 What are the risks with this setup?
 
-1. Detach can hide changes in the detector circles, so changes in your component won't notify the renderer and the DOM become stale.
+1. Detach can hide changes in the detector circles, so changes in your component won't notify the renderer and the DOM becomes stale.
 2. You have to do a lot of things manually, like detection and detach(reattach) the component
 3. Child components may not render or act correctly. In my first experiments with `MatButton` or `MatInput` it won't display correct.
 
