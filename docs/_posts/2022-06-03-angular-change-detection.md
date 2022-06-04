@@ -20,11 +20,11 @@ By Default, each component is permanently checked whether values have changed.
 
 In my main project which grew over the years, it is a nearly endless type of processing.
 
-So the idea was to migrate to `OnPush` step by step.
+So the idea was to migrate to `onPush` step by step.
 
 But what is the difference?
 
-With `OnPush` it's up to you to trigger the ChangeDection yourself, using the available tools.
+With `onPush` it's up to you to trigger the change detection yourself, using the available tools.
 
 In this article, I hope to give you a better overview of the differences and why it is important to not ignore that topic.
 
@@ -48,7 +48,7 @@ If you want to check only a small scope of your detection tree, use `detach`.
 
 Default: Angular will rather check the DOM tree too many times than not enough.
 
-OnPush: In Angular, it's your responsibility to use build-in capabilities like Pipes, Components, and the ChangeDetectorRef to define where checks are necessary outside the lifecycle routines.
+onPush: In Angular, it's your responsibility to use build-in capabilities like Pipes, Components, and the ChangeDetectorRef to define where checks are necessary outside the lifecycle routines.
 
 ## Setup
 
@@ -93,7 +93,7 @@ I performed the following steps in the application:
 
 # Test results
 
-## What does our app do during default detection?
+## What does our `App` component do during default detection?
 
 We obtain the following numbers:
 
@@ -112,7 +112,7 @@ We obtain the following numbers:
 
 The complete tree will be checked by the detector on the initial check.
 
-After the initial check, the app component in default mode will check multiple times itself and the children of it.
+After the initial check, the `App` component in default mode will check multiple times itself and the children of it.
 
 When we click on `detectChanges` of a node in the tree, itself and its children will be checked. If you don't use `detach` the change detection will start at the top of the tree and check until the origin of the detection event.
 
@@ -121,14 +121,14 @@ And again, by default, the app will check its children multiple times.
 What happens with `markForCheck`:
 
 1. checks 7
-2. checks app
+2. checks `App`
 3. checks 1
 4. checks 2
 5. checks 7
 6. checks 8
-7. double checks app again
+7. double checks `App` again
 
-## What does our app do during `onPush` detection?
+## What does our `App` component do during `onPush` detection?
 
 We obtain the following numbers:
 
@@ -147,11 +147,11 @@ We obtain the following numbers:
 
 Wow! As we can see, `onPush` detection performs about 45% better than default detection!
 
-During the initial check, '1' and '2' won't check twice, only the app will still be checked multiple times in that setup.
+During the initial check, '1' and '2' won't check twice, only `App` will still be checked multiple times in that setup.
 
 Also, additional steps won't be checked as often.
 
-Additionally, the app is more stable and won't check the tree every time.
+Additionally, the `App` component is more stable and won't check the tree every time.
 
 What's the pitfall here? Mutations in objects without trigger detection by yourself can produce stale views. So, we have to be careful when we write component logic. Best practices IMHO are observables with async subscription in the template or call `markForCheck` after async processes in the component.
 
@@ -159,7 +159,7 @@ What's the pitfall here? Mutations in objects without trigger detection by yours
 
 > This section is more experimental!
 > In this case, the simple application setup made it possible to receive the same application behavior as before.
-> Larger apps may get more stale and shaky when detach without caution!
+> Larger apps may get increasingly stale and shaky when detach is called without caution!
 
 When you have called `detach` the components after initial rendering, this will produce the following numbers
 
@@ -174,36 +174,39 @@ When you have called `detach` the components after initial rendering, this will 
 | 7     | 5            |
 | total | 38           |
 
-
 ### Explanation
 
-Awesome, from 83 to 38 is a lot of circles that we saved!
+<!-- TODO NH what do you mean by circles? "iterations" or "detector iterations" may be better -->
+
+Awesome, from 83 to 38 is a lot of circles that we saved! 
 
 What's the reason?
 
-By detaching all components from the change detection, you take over the full control over the change detection of them.
+By detaching all components from change detection, you take over the full control over change detection yourself.
 
-For example, after 'initial' step the `detectChanges` of '4' will only effect app, '4' and '5'.
+For example, after the 'initial' step, running `detectChanges` on '4' will only effect `App`, '4' and '5'.
 
-'5' is the child, '4' itself and the app because it's the root node and has to check how much of the total tree (which no more exists more or less) has to check like before.
+'5' is the child, '4' itself and `App` because it's the root node and has to check how much of the total tree (that more or less does not exist any more) has to be checked as before.
 
-> The reason for multiple checks of the app is not clear to me, I'll check it later.
+> NB: The reason for multiple checks of `App` is not clear to me, I'll check it later.
 
-What are the risks with this setup?
+<!-- TODO NH what do you mean by detector circles? "iterations" or "detector iterations" may be better -->
+
+What are some problems with this setup?
 
 1. Detach can hide changes in the detector circles, so changes in your component won't notify the renderer and the DOM becomes stale.
 2. You have to do a lot of things manually, like detection and detach(reattach) the component
-3. Child components may not render or act correctly. In my first experiments with `MatButton` or `MatInput` it won't display correctly.
+3. Child components may not render or act correctly. In my first experiments with `MatButton` or `MatInput`,  both components did not display correctly.
 
 ## My learning while writing this post
 
-1. `detach` static "leaf" components can save performance 
-2. From `Default` to `OnPush` can be hard but is essential for larger applications
+1. Running `detach` on static "leaf" components can save performance 
+2. From `Default` to `onPush` can be hard but is essential for larger applications
 
 
-### Numbers behind the tests
+### Link to statistic for my tests
 
-See [here](../assets/numbers.md)
+See [here](../assets/numbers.md).
 
 
 ## About the author: Nils Heinemann
