@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Type-Aware Rules for ESLint"
-date: 2022-06-17 11:00:00 +0100
+date: 2022-06-17 10:00:00 +0100
 categories: typescript
 author: Raphael Pigulla
 ---
