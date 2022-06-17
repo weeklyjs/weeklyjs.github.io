@@ -6,8 +6,6 @@ categories: typescript
 author: Raphael Pigulla
 ---
 
-# Type-aware rules for ESLint
-
 In a previous article my colleague [Tobias Walle](https://www.maibornwolff.de/team/tobias-walle) already discussed how [Static code analysis in Node.js](https://weeklyjs.io/javascript/2022/04/22/static-code-analysis.html) can be used to improve the quality of your code, specifically with [ESLint](https://eslint.org/). Most TypeScript developers are probably already aware of the [eslint-plugin](https://typescript-eslint.io/) which provides a plethora of additional rules specifically for TypeScript.
 
 What is slightly less known is that you can opt in to [type-aware rules](https://typescript-eslint.io/docs/linting/#type-aware-rules), albeit at some [cost to performance](https://typescript-eslint.io/docs/linting/type-linting#how-is-performance). It is highly recommended to enable this feature unless the size of your code base makes the use of it prohibitively expensive - in which case you might want to defer these checks to a pre-commit hook.
