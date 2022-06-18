@@ -19,7 +19,7 @@ For JavaScript developers, this promises at least two things:
 
 ## Why static type checking?
 
-### Cannot read property 'bar' of undefined
+### TypeError: Cannot read properties of undefined (reading 'bar')
 
 The case for static type checking is not particularly hard.
 
@@ -47,14 +47,14 @@ $ node -e 'console.log({}.foo.bar)'
 console.log({}.foo.bar)
                    ^
 
-TypeError: Cannot read property 'bar' of undefined
+TypeError: Cannot read properties of undefined (reading 'bar')
     at [eval]:1:20
-    at Script.runInThisContext (vm.js:134:12)
-    at Object.runInThisContext (vm.js:310:38)
-    at internal/process/execution.js:81:19
+    at Script.runInThisContext (node:vm:129:12)
+    at Object.runInThisContext (node:vm:305:38)
+    at node:internal/process/execution:76:19
     at [eval]-wrapper:6:22
-    at evalScript (internal/process/execution.js:80:60)
-    at internal/main/eval_string.js:27:3
+    at evalScript (node:internal/process/execution:75:60)
+    at node:internal/main/eval_string:27:3
 ```
 you probably understand why, in the long run, you want to catch these kinds of problems **before** running your code. Preferably even, you want to know this immediately when you type the code into your editor of choice.
 
