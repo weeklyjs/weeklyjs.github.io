@@ -23,7 +23,7 @@ For JavaScript developers, this promises at least two things:
 
 The case for static type checking is not particularly hard.
 
-As JavaScript developers, we probably all know the language's famously weak and dynamic type system which has no problem with letting funny code like the following pass to the interpreter without throwing errors (all examples were run with Node v16.15.1):
+As JavaScript developers, we probably all know the language's famously weak and dynamic type system which has no problem with letting funny code like the following pass to the interpreter without throwing errors:
 
 ```bash
 $ node -e 'console.log(3 + [])'
@@ -32,15 +32,17 @@ $ node -e 'console.log({}.foo)'
 undefined
 ```
 
-> :information_source: Have a look at [Programming TypeScript (p.3)](https://www.google.de/books/edition/Programming_TypeScript/Y-mUDwAAQBAJ?hl=en&gbpv=1&pg=PA3&printsec=frontcover) for more examples.
+> ℹ️ Examples were run with Node v16.15.1.
+> 
+> ℹ️ Have a look at [Programming TypeScript (p.3)](https://www.google.de/books/edition/Programming_TypeScript/Y-mUDwAAQBAJ?hl=en&gbpv=1&pg=PA3&printsec=frontcover) for more examples.
 > 
 
-Erven though the `+` operator may be overloaded to add strings and arrays, it doesn't make a lot of sense to do that in the first place. Neither does accessing a custom property `foo` on a, very obviously, empty object. The developers of JavaScript, in a very questionable attempt to make developer lives easier in the short run, opted to take care of these kinds of problems by
+Even though the `+` operator may be overloaded to add strings and arrays, it doesn't make a lot of sense to do that in the first place. Neither does accessing a custom property `foo` on a, very obviously, empty object. The developers of JavaScript, in a very questionable attempt to make developer lives easier in the short run, opted to take care of these kinds of problems by
 
 1. in the first case applying [type coercion](https://developer.mozilla.org/en-US/docs/Glossary/Type_coercion), and 
 2. in the second case by defaulting to the special value `undefined` that models undefined values.
 
-If you have ever ripped your hairs trying to find the cause of the infamous "TypeError: Cannot read property 'bar' of undefined" runtime error, e.g.
+If you have ever ripped your hairs trying to find the cause of the infamous run time errors like "TypeError: Cannot read properties of undefined (reading 'bar')"
 ```bash
 $ node -e 'console.log({}.foo.bar)'
 [eval]:1
@@ -81,13 +83,13 @@ $ ts-node -e 'console.log({}.foo.bar)'
                  ~~~
 ```
 
-As we can see, this type of error can easily be detected before running the code by applying type checking. In the first case, TypeScript tells us that we likely wanted a number on the right-hand side of the `+` operator (and not add a number and an array). 
+As we can see, both problems can easily be detected before running the code by applying static type checking. In the first case, TypeScript tells us that we likely wanted a number on the right-hand side of the `+` operator (and not an array). 
 
 In the second case, we are informed that empty objects do not magically come with an arbitrary property called `foo`. 
 
 
 
-> NB: Admittedly, the phrasing of the first error message is a little bit off because we **can** actually apply the `+` operator to `number` and `array` types (in our case yielding a `number` value `3` as shown above). By [specification](https://tc39.es/ecma262/multipage/ecmascript-language-expressions.html#sec-addition-operator-plus), however, it is only overloaded for number addition and string concatenation. Moreover, it makes very little sense to "add" numbers and arrays, so the right-hand side value probably was intended to be a number as well.
+>  ℹ️ Admittedly, the phrasing of the first error message is a little bit off because we **can** actually apply the `+` operator to `number` and `array` types (in our case yielding a `number` value `3` as shown above). By [specification](https://tc39.es/ecma262/multipage/ecmascript-language-expressions.html#sec-addition-operator-plus), however, it is only overloaded for number addition and string concatenation. Moreover, it makes very little sense to "add" numbers and arrays, so the right-hand side value probably was intended to be a number as well.
 
 
 
@@ -96,11 +98,11 @@ These two properties, i.e.
 1. the plus operator is only used for number addition and string concatenation and
 2. custom properties of objects are not accessed before they are set
 
-are very reasonable constraints for good JavaScript programs. If they don't hold, we most likely have found some kind of program bug or otherwise bad code. Consequently, it's extremely helpful that TypeScript can assert (or, disconfirm) these properties for us before we run the code. 
+are very reasonable constraints for good JavaScript programs. If they don't hold, we most likely have found some kind of program bug or otherwise bad code. Consequently, it's extremely helpful that TypeScript can assert (or, disproof) these properties for us before we run the code. 
 
 
 
-Another terrific aspect of TypeScript's type checking is that we don't actually have to add a lot of type information. In simple cases like the above, TypeScript can simply guess the types in absence of type information via [type inference](https://www.typescriptlang.org/docs/handbook/type-inference.html). 
+Another great aspect of TypeScript's type checking is that we, for the most part, don't actually have to add a lot of type information. In simple cases like the above, TypeScript can simply guess the types via [type inference](https://www.typescriptlang.org/docs/handbook/type-inference.html). 
 
 
 
@@ -113,46 +115,6 @@ Unsurprisingly, a lot of JavaScript developers have come to appreciate TypeScrip
 
 
 ## Making type annotations part of JavaScript
-
-### Motivation
-
-Having established that static typing is generally useful for JavaScript development (and development in general), the question to address is this: why not just develop in TypeScript if we want to add static type checks to our JavaScript development process? 
-
-
-
-One big argument in favor of types as comments in JavaScript compared to TypeScript (or similar languages and tools) is that it gives us the choice of type checker we want to use. We could for example opt for [Flow's](https://flow.org/) type checker instead of TypeScript's type checker if we preferred that (and if Flow started to support the types as comments syntax).
-
-
-
-Another important argument pro types as comments in JavaScript is that it lets us skip the inevitable JavaScript transpilation step. Compare that to developing in TypeScript, where the usual workflow includes running our code through `tsc` (the TypeScript compiler) before executing it with `node` or in the browser. Dropping the transpilation step may significantly improve the speed of our development loop and moreover may require less set-up (such as the `tsconfig.json` file).
-
-![Comparison of development workflow: type as comments and TypeScript](/assets/2022-06_types-as-comments-comparison.png)
-
-> :information_source: A more elaborate discussion can be found here in [this article on the Microsoft dev blog](https://devblogs.microsoft.com/typescript/a-proposal-for-type-syntax-in-javascript/). (Picture above is also taken from the blog.)
-> 
-
-
-
-Lastly, even if we don't use type information for static type checking, it could be argued that they are a very good and less verbose replacement for [JSDoc](https://jsdoc.app/) style type comments. I.e., this
-
-```javascript
-/**
- * @param a {number}
- * @param b {number}
- */
-function add(a, b) {
-    return a + b;
-}
-```
-
-simply would become this
-
-```javascript
-function add(a: number, b: number) {
-  return a + b;
-}
-```
-
 ### What does it look like? 
 
 The syntax of the [proposal for types as comments][tc39-types-as-comments] will probably not surprise anyone who has worked with either TypeScript or Flow. It rather seems like the authors aimed to capture the common subset of both. A lot of code written in TypeScript and Flow therefore already conforms to the proposed syntax.
@@ -206,7 +168,7 @@ JavaScript's primitive data types have corresponding predefined types (such as `
 
 
 
-> :information_source: Curiously, the proposal suggests ignoring anything in between the curly braces of both `interface` as well as `class` declarations. This does not make much sense to me at the moment, but will hopefully be cleared up in the upcoming drafts.
+>  ℹ️ Curiously, the proposal suggests ignoring anything in between the curly braces of both `interface` as well as `class` declarations. This does not make much sense to me at the moment, but will hopefully be cleared up in the upcoming drafts.
 
 
 
@@ -220,12 +182,50 @@ Some more complicated type system features such as
 
 are also proposed to be supported in order to add some more expressiveness. 
 
-> :information_source: For the full list of features, take a look at [the current draft][tc39-types-as-comments].
+>  ℹ️ For the full list of features, take a look at [the current draft][tc39-types-as-comments].
 
 #### Extensions to the module system
 
 Lastly, an extension to the module system syntax is proposed so that types can be imported and exported as well using `import type` respectively `export type`.
 
+
+
+### Motivation for types as comments in JavaScript
+
+Judging from the widespread adoption of TypeScript, static typing is generally considered useful for JavaScript development. So, the question to address is "why don't we just not develop in TypeScript if we want to add type information to our JavaScript and/or static type checks to our JavaScript development process?" 
+
+One big argument in favor of types as comments in JavaScript compared to TypeScript (or similar languages and tools) is that it gives us the choice of tooling. For example, we could opt for [Flow's](https://flow.org/) type checker instead of TypeScript's type checker if we preferred that.
+
+>  ℹ️ Flow would also be able to read the JavaScript code with type information as we will see later on.
+
+Another important argument pro types as comments in JavaScript is that it lets us skip the inevitable JavaScript transpilation step. Compare that to developing in TypeScript, where the usual workflow includes running our code through `tsc` (the TypeScript compiler) before executing it with `node` or in the browser. Dropping the transpilation step may significantly improve the speed of our development loop and moreover may require less set-up (such as the `tsconfig.json` file).
+
+![Comparison of development workflow: type as comments and TypeScript](/assets/2022-06_types-as-comments-comparison.png)
+
+>  ℹ️ A more elaborate discussion can be found here in [this article on the Microsoft dev blog](https://devblogs.microsoft.com/typescript/a-proposal-for-type-syntax-in-javascript/). (Picture above is also taken from the blog.)
+> 
+
+
+
+Lastly, even if we don't use type information for static type checking, it could be argued that they are a very good and less verbose replacement for [JSDoc](https://jsdoc.app/) style type comments. I.e., this
+
+```javascript
+/**
+ * @param a {number}
+ * @param b {number}
+ */
+function add(a, b) {
+    return a + b;
+}
+```
+
+simply would become this
+
+```javascript
+function add(a: number, b: number) {
+  return a + b;
+}
+```
 
 
 ### What the proposal is not about
