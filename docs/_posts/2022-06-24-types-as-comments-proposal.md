@@ -23,7 +23,7 @@ For JavaScript developers, this promises at least two things:
 
 The case for static type checking is not particularly hard.
 
-As JavaScript developers, we probably all know the language's famously weak and dynamic type system which has no problem with letting funny code like the following pass to the interpreter without throwing errors (all examples were run with Node v14.19.3)
+As JavaScript developers, we probably all know the language's famously weak and dynamic type system which has no problem with letting funny code like the following pass to the interpreter without throwing errors (all examples were run with Node v16.15.1):
 
 ```bash
 $ node -e 'console.log(3 + [])'
