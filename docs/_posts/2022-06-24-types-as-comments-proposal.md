@@ -35,7 +35,7 @@ undefined
 > :information_source: Have a look at [Programming TypeScript (p.3)](https://www.google.de/books/edition/Programming_TypeScript/Y-mUDwAAQBAJ?hl=en&gbpv=1&pg=PA3&printsec=frontcover) for more examples.
 > 
 
-Obviously, even though the `+` operator may be overloaded to add strings and arrays, it doesn't make a lot of sense to do that in the first place. Neither does accessing a custom property `foo` on a, very obviously, empty object. The developers of JavaScript, in a very questionable attempt to make developer lives easier in the short run, opted to take care of these kinds of problems by
+Erven though the `+` operator may be overloaded to add strings and arrays, it doesn't make a lot of sense to do that in the first place. Neither does accessing a custom property `foo` on a, very obviously, empty object. The developers of JavaScript, in a very questionable attempt to make developer lives easier in the short run, opted to take care of these kinds of problems by
 
 1. in the first case applying [type coercion](https://developer.mozilla.org/en-US/docs/Glossary/Type_coercion), and 
 2. in the second case by defaulting to the special value `undefined` that models undefined values.
@@ -81,13 +81,13 @@ $ ts-node -e 'console.log({}.foo.bar)'
                  ~~~
 ```
 
-As we can see, this type of error can easily be detected before running the code by applying type checking. In the first case, TypeScript tells us that we likely wanted a number on the right hand side of the `+` operator (and not add a number and an array). 
+As we can see, this type of error can easily be detected before running the code by applying type checking. In the first case, TypeScript tells us that we likely wanted a number on the right-hand side of the `+` operator (and not add a number and an array). 
 
 In the second case, we are informed that empty objects do not magically come with an arbitrary property called `foo`. 
 
 
 
-> NB: Admittedly, the phrasing of the first error message is a little bit off because we **can** actually apply the `+` operator to `number` and `array` types (in our case yielding a `number` value `3` as shown above). By [specification](https://tc39.es/ecma262/multipage/ecmascript-language-expressions.html#sec-addition-operator-plus), however, it is only overloaded for number addition and string concatenation. Moreover, it makes very little sense to "add" numbers and arrays, so the right hand side value probably was intended to be a number as well.
+> NB: Admittedly, the phrasing of the first error message is a little bit off because we **can** actually apply the `+` operator to `number` and `array` types (in our case yielding a `number` value `3` as shown above). By [specification](https://tc39.es/ecma262/multipage/ecmascript-language-expressions.html#sec-addition-operator-plus), however, it is only overloaded for number addition and string concatenation. Moreover, it makes very little sense to "add" numbers and arrays, so the right-hand side value probably was intended to be a number as well.
 
 
 
@@ -155,7 +155,7 @@ function add(a: number, b: number) {
 
 ### What does it look like? 
 
-The syntax of the [proposal for types as comments][tc39-types-as-comments] will probably not suprise anyone who has worked with either TypeScript or Flow. It rather seems like the authors aimed to capture the common subset of both. A lot of code written in TypeScript and Flow therefore already conforms to the proposed syntax.
+The syntax of the [proposal for types as comments][tc39-types-as-comments] will probably not surprise anyone who has worked with either TypeScript or Flow. It rather seems like the authors aimed to capture the common subset of both. A lot of code written in TypeScript and Flow therefore already conforms to the proposed syntax.
 
 
 
@@ -238,7 +238,7 @@ This is a cautious and smart way to proceed on this topic in my opinion, because
 
 ## Summary
 
-The types as comments proposal laid out by the TC39 technical committee for JavaScript suggests adding syntax for optional typing information to JavaScript. With these syntax additions, we may provide type information in JavaScript code similar to comments. This type information may be used to  to leverage static type checking just as in TypeScript or Flow in order to improve code quality and safety. Having types as comments in JavaScript makes a lot of sense given the popularity of statically typed languages that compile to JavaScript such as TypeScript and Flow. We can make at least three arguments in favor of types as comments: 1. it gives us the choice of type checker, 2. we can prune transpilation from our development loop, and 3. type information is a less verbose replacement for JSDoc-style type comments.
+The types as comments proposal laid out by the TC39 technical committee for JavaScript suggests adding syntax for optional typing information to JavaScript. With these syntax additions, we may provide type information in JavaScript code similar to comments. This type information may be used to leverage static type checking just as in TypeScript or Flow in order to improve code quality and safety. Having types as comments in JavaScript makes a lot of sense given the popularity of statically typed languages that compile to JavaScript such as TypeScript and Flow. We can make at least three arguments in favor of types as comments: 1. it gives us the choice of the type checker, 2. we can prune the transpilation step from our development loop, and 3. type information is a less verbose replacement for JSDoc-style type comments.
 
 
 
