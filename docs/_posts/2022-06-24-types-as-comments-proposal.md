@@ -5,7 +5,7 @@ date:   2022-06-16 08:00:13 +0100
 categories: typescript, javascript
 author: Friedrich Kurz
 ---
-Today we're looking into the potential future of JavaScript by reading up on the types as comments proposal that seeks to introduce static type information as part of the core JavaScript language.
+Today we're looking into the potential future of JavaScript by reading up on the types as comments proposal that seeks to introduce type information as part of the core JavaScript language.
 
 ## Types as comments
 
