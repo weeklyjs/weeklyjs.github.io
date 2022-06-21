@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  Types as comments for plain JavaScript
-date:   2022-06-16 08:00:13 +0100
+date:   2022-06-24 08:00:13 +0100
 categories: typescript, javascript
 author: Friedrich Kurz
 ---
